@@ -3,6 +3,9 @@ import { CacheModule } from "@nestjs/cache-manager";
 import { CacheOptions } from "./configs/redis.config";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { KnexModule } from "nestjs-knex";
+import { BullModule } from '@nestjs/bull';
+import { BullSharedOptions } from "./configs/bull.config";
+import { TodoProcessor } from "./processor/queue.processor";
 
 @Module({
   imports: [
@@ -11,6 +14,9 @@ import { KnexModule } from "nestjs-knex";
     }),
     CacheModule.registerAsync({
       useClass: CacheOptions,
+    }),
+    BullModule.forRootAsync({
+      useClass: BullSharedOptions
     }),
     KnexModule.forRootAsync({
       imports: [ConfigModule],
@@ -30,6 +36,8 @@ import { KnexModule } from "nestjs-knex";
       inject: [ConfigService],
     })
   ],
-  providers: []
+  providers: [
+    TodoProcessor
+  ]
 })
-export class SharedModule {}
+export class SharedModule { }

@@ -5,9 +5,12 @@ import { UpdateTodoDto } from "./dto/update-todo.dto";
 import { CacheTTL, Inject } from "@nestjs/common";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
+import { InjectQueue } from "@nestjs/bull";
+import { Queue } from "bull";
 
 export class TodoRepository {
   constructor(
+    @InjectQueue('todo') private readonly queue: Queue,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     @InjectKnex() private readonly knex: Knex
   ) { }
@@ -16,23 +19,17 @@ export class TodoRepository {
   async findAll() {
     const cacheValue = await this.cacheManager.get('todo_findall');
     if (cacheValue) {
-      console.log('cache');
-      
       return cacheValue;
     }
     const result = await this.knex.select().from('todo');
     await this.cacheManager.set('todo_findall', result);
-    console.log('db');
     return result
   }
 
   async findOne(id: number) {
-    const cacheValue = await this.cacheManager.get('todo_findone');
-    if (cacheValue) {
-      return cacheValue;
-    }
-    const result = await this.knex('todo').where({ id });
+    const result = await this.knex('todo').where({ id }).first();
     await this.cacheManager.set('todo_findone', result);
+    await this.queue.add('todo-test', result);
     return result
   }
 
