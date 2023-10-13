@@ -6,6 +6,8 @@ export class TodoProcessor {
   @Process('todo-test')
   async processTodo(job: Job) {
     const id = job.data;
-    console.log(id, 'queue');
+    console.log(id);
+    
+    return id;
   }
 }

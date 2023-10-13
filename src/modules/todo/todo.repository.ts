@@ -29,8 +29,8 @@ export class TodoRepository {
   async findOne(id: number) {
     const result = await this.knex('todo').where({ id }).first();
     await this.cacheManager.set('todo_findone', result);
-    await this.queue.add('todo-test', result);
-    return result
+    const queue = await this.queue.add('todo-test', result);
+    return queue.data;
   }
 
   async create(todo: CreateTodoDto) {
