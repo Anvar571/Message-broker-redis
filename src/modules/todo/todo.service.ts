@@ -1,26 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { Knex } from 'knex';
+import { TodoRepository } from './todo.repository';
 
 @Injectable()
 export class TodoService {
-  constructor(private readonly knex: Knex) {}
-
+  constructor(
+    private readonly todoRepo: TodoRepository,
+  ) {}
+  
   async findAll() {
-    return this.knex.select().from('todos');
+    return this.todoRepo.findAll();
+  }
+
+  async findOne(id: number) {
+    return this.todoRepo.findOne(id);
   }
 
   async create(todo: CreateTodoDto) {
-    return this.knex('todos').insert(todo);
+    return this.todoRepo.create(todo)
   }
 
   async update(id: number, todo: UpdateTodoDto) {
-    return this.knex('todos').where({ id }).update(todo);
+    return this.todoRepo.update(id, todo);
   }
 
   async delete(id: number) {
-    return this.knex('todos').where({ id }).delete();
+    return this.todoRepo.delete(id);
   }
 }
 
