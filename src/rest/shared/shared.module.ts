@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { KnexModule } from "nestjs-knex";
 import { BullModule } from '@nestjs/bull';
 import { BullSharedOptions } from "./configs/bull.config";
-import { TodoProcessor } from "./processor/queue.processor";
+import { TodoProcessor } from "./processor/todo.processor";
 
 @Module({
   imports: [
