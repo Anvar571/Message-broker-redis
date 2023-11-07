@@ -1,19 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, CacheInterceptor, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-
+import { Request } from "express";
+  
 @Controller('todo')
 export class TodoController {
-  constructor(private readonly todoService: TodoService) {}
+  constructor(private readonly todoService: TodoService) { }
 
   @Post()
   create(@Body() createTodoDto: CreateTodoDto) {
+
     return this.todoService.create(createTodoDto);
   }
 
   @Get()
-  findAll() {
+  findAll(@Req() req: Request) {
+    const browser = req.headers['user-agent'];
+    
+    console.log(browser.includes('Chrome')); // saytga browserdan(chrome dan ) kirishini tekshiradi
+
     return this.todoService.findAll();
   }
 
